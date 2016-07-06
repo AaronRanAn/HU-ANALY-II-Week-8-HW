@@ -1,0 +1,37 @@
+---
+title: "Association Supplement"
+author: "James Muguira"
+date: "April 12, 2016"
+output: html_document
+---
+
+
+Let's work one more example and show how to use the lhs, rhss, support and confidence ratio's to quickly narrow the rule set to an answer.  We are going to follow Salem Marafi's (http://www.salemmarafi.com/code/market-basket-analysis-with-r/) analysis to start.
+
+First, let's get the dataset loaded.
+
+```{r}
+library(arules)
+library(arulesViz)
+library(datasets)
+data("Groceries")
+str(Groceries)
+```
+
+We see from the output of the R command str() that the Groceries dataset is a different type of dataset. We had been working with data frames before. Now, we'll work with the arules transactions type. The Groceries transaction type has 9835 items. Each item set is a grocery list of items to purchase at the market that day. Good way to view these lists is with the itemFrequencyPlot command. If you issue the command without parameters the plot is too busy to read so let's just view the top 10 items.
+
+```{r}
+itemFrequencyPlot(Groceries, topN=10, type='absolute')
+```
+
+This plot shows that 'whole milk' is a popular item to purchase.  What we want to know is "what other items are purchased with yogurt?" If we set the confidence low (e.g. conf=0.08) we generate almost 35,000 rules.  Explaining that another way, if we want to see all the rules where the conclusion (any premise in this case) occurs at least 8% of the time the algorithm generated 34,927 rules. That is a few too many to sort through by hand. Mr. Marafi leads us through analysis by sorting the rule set and then reducing redundancy and finally targeting a specific right hand side rule. We can quickly narrow this by adding to the parameter list.  
+
+*We'll add the 'minlen' parameter to remove rules with a blank lhs.  
+*We'll add the 'appearance=' parameter to narrow the search to just yogurt.
+
+```{r}
+rules = apriori(Groceries, parameter=list(supp=0.001, conf=0.08,minlen=2), appearance = list(default='rhs',lhs='yogurt'), control=list(verbose=F))
+inspect(rules)
+```
+
+There you are. Given the 9800 odd shopping lists as a starting point we can quickly determine items that are purchased together.  In our case or yogurt, the search provided 25 rules.  The implication for a small market vendor might be that these items should be stocked so as to maximize the sales when someone is looking for yogurt.

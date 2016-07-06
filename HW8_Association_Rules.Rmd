@@ -1,0 +1,81 @@
+---
+title: "HW8 Association Rules"
+author: "Aaron"
+date: "July 6, 2016"
+output: 
+  html_document: 
+    highlight: haddock
+    theme: cosmo
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Instrunctions: 
+
+First, install the package arules
+
+```{r message=F}
+
+library(arules)
+library(dplyr)
+library(ggplot2)
+
+```
+
+Second, load the data set using the following command
+
+```{r}
+
+grd <- read.transactions("http://fimi.ua.ac.be/data/retail.dat", format="basket")
+
+```
+
+Third, run the following commands and interpret the results
+
+```{r}
+itemFrequencyPlot(grd,support=.1)
+```
+
+```{r}
+itemFrequencyPlot(grd,support=.2)
+```
+
+```{r}
+itemFrequencyPlot(grd,support=.3)
+```
+
+
+```{r}
+summary(grd)
+```
+
+```{r}
+# inspect(grd)  #you will have to stop the listing manually
+```
+
+
+Create the rules object using apriori
+
+```{r}
+
+grdar <- apriori(grd,parameter=list(supp=.05,conf=.5))
+
+inspect(grdar)
+
+```
+
+Now that you have rules,…
+Find a few interesting rules
+Tell me something you learned from interpreting the rules
+
+#### Interesting Rules
+
+*Rule no.1*: `{41}    => {48} 0.10228897 (S) 0.6034125 (C)  1.2625621 (L)` 
+
+Itme `41` happens (end up in the grocery buyer's basket) about 10% of the time, and once that happens, 76% of the time, item `39` is there too, this prediction is about 20% better than random guess. 
+
+*Rule no.2*: `{38,39} => {48} 0.06921349 (S) 0.5898502 (C)  1.2341847 (L)`
+Itme `38 and 39` happens (end up in the grocery buyer's basket) about 6% of the time, and once that happens, 59% of the time, item `48` is there too, this prediction is about 24% better than random guess. 
+
